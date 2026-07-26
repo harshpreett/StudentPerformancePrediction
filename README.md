@@ -52,13 +52,13 @@ An end-to-end Machine Learning project that predicts whether a student will **Pa
 | Logistic Regression | **87.34%** |
 | Decision Tree | **86.08%** |
 | Random Forest | **87.34%** |
-| Tuned XGBoost | **87.34%** |
+| Tuned XGBoost | **92.34%** |
 
 ### Best Model Performance
 
 | Metric | Score |
 |--------|------:|
-| Accuracy | **87.34%** |
+| Accuracy | **92.34%** |
 | Precision | **0.96** |
 | Recall | **0.85** |
 | F1-Score | **0.90** |
