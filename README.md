@@ -143,3 +143,24 @@ B.Tech CSE (Data Science)
 Punjab Engineering College (PEC)
 
 GitHub: https://github.com/harshpreett
+## 📷 Screenshots
+
+<table>
+<tr>
+<td align="center"><b>Home Page</b></td>
+<td align="center"><b>Prediction Result</b></td>
+</tr>
+<tr>
+<td><img src="images/home.png" width="450"></td>
+<td><img src="images/prediction.png" width="450"></td>
+</tr>
+
+<tr>
+<td align="center"><b>Feature Importance</b></td>
+<td align="center"><b>Confusion Matrix</b></td>
+</tr>
+<tr>
+<td><img src="images/feature_importance.png" width="450"></td>
+<td><img src="images/confusion_matrix.png" width="450"></td>
+</tr>
+</table>
