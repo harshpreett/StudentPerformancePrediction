@@ -1,14 +1,15 @@
+import os
+import json
 import pandas as pd
 from flask import Flask, request, render_template
 import joblib
 
 app = Flask(__name__)
 
-# Load the saved models from Day 1
+# Load the saved models 
 model = joblib.load('models/model.pkl')
 preprocessor = joblib.load('models/preprocessor.pkl')
 
-# Baseline defaults for the dataset so we don't need a 30-field HTML form
 DEFAULT_VALUES = {
     'school': 'GP', 'sex': 'F', 'age': 16, 'address': 'U', 'famsize': 'GT3',
     'Pstatus': 'T', 'Medu': 3, 'Fedu': 3, 'Mjob': 'other', 'Fjob': 'other',
@@ -16,25 +17,36 @@ DEFAULT_VALUES = {
     'failures': 0, 'schoolsup': 'no', 'famsup': 'no', 'paid': 'no',
     'activities': 'no', 'nursery': 'yes', 'higher': 'yes', 'internet': 'yes',
     'romantic': 'no', 'famrel': 4, 'freetime': 3, 'goout': 3, 'Dalc': 1,
-    'Walc': 1, 'health': 3, 'absences': 0, 'G1': 10, 'G2': 10
+    'Walc': 1, 'health': 3, 'absences': 0
 }
+
+def get_fi_data():
+    if os.path.exists("static/fi.json"):
+        with open("static/fi.json", "r") as f:
+            data = json.load(f)
+            return list(data.keys()), list(data.values())
+    return [], []
 
 @app.route('/')
 def home():
-    return render_template('index.html', prediction=None)
+    fi_labels, fi_values = get_fi_data()
+    return render_template('index.html', prediction=None, fi_labels=fi_labels, fi_values=fi_values)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Merge user form data with defaults
     user_input = DEFAULT_VALUES.copy()
     form_data = request.form.to_dict()
     
-    # Update and convert numeric fields
-    for col in ['age', 'studytime', 'failures', 'absences', 'G1', 'G2']:
+    numeric_cols = ['age', 'Medu', 'Fedu', 'studytime', 'failures', 'absences', 'health']
+    for col in numeric_cols:
         if col in form_data and form_data[col]:
             user_input[col] = int(form_data[col])
             
-    # Process and Predict
+    cat_cols = ['sex', 'higher', 'internet', 'famsup', 'activities']
+    for col in cat_cols:
+        if col in form_data and form_data[col]:
+            user_input[col] = form_data[col]
+            
     df = pd.DataFrame([user_input])
     X_processed = preprocessor.transform(df)
     
@@ -44,9 +56,13 @@ def predict():
     result = "PASS" if prediction == 1 else "FAIL"
     confidence = proba if prediction == 1 else (1 - proba)
     
+    fi_labels, fi_values = get_fi_data()
+    
     return render_template('index.html', 
                            prediction=result, 
-                           confidence=f"{confidence * 100:.1f}%")
+                           confidence=f"{confidence * 100:.1f}%",
+                           fi_labels=fi_labels,
+                           fi_values=fi_values)
 
 if __name__ == '__main__':
     app.run(debug=True)

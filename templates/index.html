@@ -3,55 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Performance Predictor</title>
+    <title>Student Performance Dashboard</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f4f7f6; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
-        h1, h2 { color: #333; text-align: center; }
-        form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        label { font-weight: bold; }
-        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        button { grid-column: span 2; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #218838; }
-        .result { text-align: center; font-size: 20px; font-weight: bold; margin-top: 20px; color: #0056b3; }
-        canvas { margin-top: 30px; }
+        body { background-color: #F5F7FA; color: #333; }
+        .hero-section { background-color: white; padding: 40px 0; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card-header { background-color: white; border-bottom: 1px solid #eee; font-weight: bold; font-size: 1.1rem; border-radius: 12px 12px 0 0 !important; }
+        .btn-primary { background-color: #2563EB; border-color: #2563EB; padding: 12px; font-weight: bold; border-radius: 8px; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .result-card.pass { background-color: #dcfce7; border: 2px solid #16A34A; }
+        .result-card.fail { background-color: #fee2e2; border: 2px solid #dc2626; }
+        .text-success-custom { color: #16A34A; }
+        .progress-bar-custom { background-color: #16A34A; }
     </style>
 </head>
 <body>
 
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="fw-bold"><i class="fa-solid fa-graduation-cap text-primary mb-2"></i><br>Student Performance Prediction Dashboard</h1>
+        <p class="text-muted fs-5 mt-2">Predict whether a student is likely to pass based on academic, demographic, and lifestyle factors.</p>
+    </div>
+</div>
+
 <div class="container">
-    <h1>Student Performance Predictor</h1>
-    
     <form action="/predict" method="POST">
-        <div>
-            <label>G1 Score (0-20):</label><br>
-            <input type="number" name="G1" min="0" max="20" required>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header"><i class="fa-solid fa-user me-2 text-primary"></i>Student Information</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Gender</label>
+                            <select name="sex" class="form-select">
+                                <option value="F">Female</option>
+                                <option value="M">Male</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Age</label>
+                            <input type="number" name="age" class="form-control" min="15" max="22" value="16" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Mother's Education (0-4)</label>
+                            <input type="number" name="Medu" class="form-control" min="0" max="4" value="3" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Father's Education (0-4)</label>
+                            <input type="number" name="Fedu" class="form-control" min="0" max="4" value="3" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header"><i class="fa-solid fa-book me-2 text-primary"></i>Academic Info</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Study Time (1-4)</label>
+                            <select name="studytime" class="form-select">
+                                <option value="1">1: < 2 hours</option>
+                                <option value="2" selected>2: 2-5 hours</option>
+                                <option value="3">3: 5-10 hours</option>
+                                <option value="4">4: > 10 hours</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Past Failures</label>
+                            <select name="failures" class="form-select">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3+</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Absences</label>
+                            <input type="number" name="absences" class="form-control" min="0" max="93" value="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Wants Higher Education?</label>
+                            <select name="higher" class="form-select">
+                                <option value="yes" selected>Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header"><i class="fa-solid fa-house me-2 text-primary"></i>Lifestyle</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Internet Access</label>
+                            <select name="internet" class="form-select">
+                                <option value="yes" selected>Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Family Support</label>
+                            <select name="famsup" class="form-select">
+                                <option value="yes">Yes</option>
+                                <option value="no" selected>No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Extracurriculars</label>
+                            <select name="activities" class="form-select">
+                                <option value="yes">Yes</option>
+                                <option value="no" selected>No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Health Status (1-5)</label>
+                            <input type="number" name="health" class="form-control" min="1" max="5" value="3" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <label>G2 Score (0-20):</label><br>
-            <input type="number" name="G2" min="0" max="20" required>
+
+        <div class="d-grid gap-2 mt-4 mb-5">
+            <button type="submit" class="btn btn-primary btn-lg"><i class="fa-solid fa-magnifying-glass me-2"></i>Predict Performance</button>
         </div>
-        <div>
-            <label>Absences (0-93):</label><br>
-            <input type="number" name="absences" min="0" max="93" required>
-        </div>
-        <div>
-            <label>Study Time (1-4):</label><br>
-            <input type="number" name="studytime" min="1" max="4" required>
-        </div>
-        <button type="submit">Predict Pass/Fail</button>
     </form>
 
     {% if prediction %}
-    <div class="result">
-        Prediction: {{ prediction }} <br>
-        Confidence: {{ confidence }}
+    <div class="card result-card {{ 'pass' if prediction == 'PASS' else 'fail' }} p-4 mb-5">
+        <div class="card-body text-center">
+            <h2 class="fw-bold {{ 'text-success-custom' if prediction == 'PASS' else 'text-danger' }}">
+                <i class="fa-solid {{ 'fa-circle-check' if prediction == 'PASS' else 'fa-circle-xmark' }} me-2"></i>{{ prediction }}
+            </h2>
+            <p class="fs-5 mt-3 mb-1">Model Confidence</p>
+            <h3 class="fw-bold">{{ confidence }}</h3>
+            <div class="progress mt-3" style="height: 25px; border-radius: 12px;">
+                <div class="progress-bar {{ 'progress-bar-custom' if prediction == 'PASS' else 'bg-danger' }}" role="progressbar" style="width: {{ confidence }};" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
     </div>
     {% endif %}
 
-    <h2>Model Accuracy Comparison</h2>
-    <canvas id="accuracyChart"></canvas>
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header"><i class="fa-solid fa-chart-bar me-2 text-primary"></i>Accuracy Comparison</div>
+                <div class="card-body p-4">
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header"><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Feature Importance</div>
+                <div class="card-body p-4">
+                    <canvas id="fiChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header"><i class="fa-solid fa-table-cells me-2 text-primary"></i>Confusion Matrix</div>
+                <div class="card-body text-center p-3">
+                    <img src="{{ url_for('static', filename='cm.png') }}" class="img-fluid rounded border" alt="Confusion Matrix">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -59,20 +186,39 @@
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Logistic Regression', 'Decision Tree', 'Random Forest', 'XGBoost (Tuned)'],
+            labels: ['LogReg', 'Tree', 'Forest', 'XGB'],
             datasets: [{
-                label: 'Accuracy Score (%)',
+                label: 'Accuracy (%)',
                 data: [91.1, 84.8, 91.1, 89.9],
-                backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745']
+                backgroundColor: ['#2563EB', '#6b7280', '#6b7280', '#6b7280'],
+                borderRadius: 4
             }]
         },
         options: {
-            scales: {
-                y: { beginAtZero: false, min: 75, max: 100 }
-            }
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: false, min: 70, max: 100 } }
+        }
+    });
+
+    const fiCtx = document.getElementById('fiChart').getContext('2d');
+    new Chart(fiCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ fi_labels | safe }},
+            datasets: [{
+                label: 'Weight',
+                data: {{ fi_values | safe }},
+                backgroundColor: '#16A34A',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
         }
     });
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
