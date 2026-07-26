@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f4f7f6; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; text-align: center; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        label { font-weight: bold; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { grid-column: span 2; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #218838; }
+        .result { text-align: center; font-size: 20px; font-weight: bold; margin-top: 20px; color: #0056b3; }
+        canvas { margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Student Performance Predictor</h1>
+    
+    <form action="/predict" method="POST">
+        <div>
+            <label>G1 Score (0-20):</label><br>
+            <input type="number" name="G1" min="0" max="20" required>
+        </div>
+        <div>
+            <label>G2 Score (0-20):</label><br>
+            <input type="number" name="G2" min="0" max="20" required>
+        </div>
+        <div>
+            <label>Absences (0-93):</label><br>
+            <input type="number" name="absences" min="0" max="93" required>
+        </div>
+        <div>
+            <label>Study Time (1-4):</label><br>
+            <input type="number" name="studytime" min="1" max="4" required>
+        </div>
+        <button type="submit">Predict Pass/Fail</button>
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+        Prediction: {{ prediction }} <br>
+        Confidence: {{ confidence }}
+    </div>
+    {% endif %}
+
+    <h2>Model Accuracy Comparison</h2>
+    <canvas id="accuracyChart"></canvas>
+</div>
+
+<script>
+    const ctx = document.getElementById('accuracyChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Logistic Regression', 'Decision Tree', 'Random Forest', 'XGBoost (Tuned)'],
+            datasets: [{
+                label: 'Accuracy Score (%)',
+                data: [91.1, 84.8, 91.1, 89.9],
+                backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745']
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: false, min: 75, max: 100 }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
